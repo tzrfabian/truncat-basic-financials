@@ -4,11 +4,11 @@ const axios = require('axios');
 const { FINNHUB_API_KEY } = process.env;
 
 class BasicFinancialsController {
-  static async getBasicFinancials(req, res) {
+  static async getBasicFinancials(req, res, next) {
     const { symbol } = req.query;
 
     if (!symbol) {
-      return res.status(400).json({ error: 'Symbol is required' });
+      return next({ name: 'ValidationError', message: 'Symbol is required' });
     }
 
     try {
@@ -20,6 +20,7 @@ class BasicFinancialsController {
         const metric = response.data.metric;
 
         const selectedMetrics = {
+          metric: {
             marketCapitalization: metric['52WeekPriceReturnDaily'],
             bookValuePerShareAnnual: metric.bookValuePerShareAnnual,
             epsAnnual: metric.epsAnnual,
@@ -38,15 +39,16 @@ class BasicFinancialsController {
             roa5Y: metric.roa5Y,
             roe5Y: metric.roe5Y,
             period: metric.period
-        };
+        }
+      };
 
         return res.status(200).json(selectedMetrics);
       } else {
-        return res.status(response.status).json({ error: 'Error fetching data' });
+        return next( { name: 'NotFound', message: 'Failed to fetch data' });
       }
     } catch (error) {
       console.error('Error fetching basic financials:', error);
-      return res.status(500).json({ error: 'Internal server error' });
+      return next(error);
     }
   }
 }
