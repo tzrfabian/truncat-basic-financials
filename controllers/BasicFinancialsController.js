@@ -12,33 +12,30 @@ class BasicFinancialsController {
     }
     
     try {
-      const response_profile = await axios.get(
-        `https://finnhub.io/api/v1/stock/profile?symbol=${symbol}&token=${FINNHUB_API_KEY}`
-      );
-      const price_metrics = await axios.get(
-        `https://finnhub.io/api/v1/stock/price-metric?symbol=${symbol}&token=${FINNHUB_API_KEY}`
-      );
-      const response_basic_financials = await axios.get(
-        `https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${FINNHUB_API_KEY}`
-      );
-      const response_financials_bs = await axios.get(
-        `https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=bs&freq=annual&token=${FINNHUB_API_KEY}`
-      );
-      const response_financials_ic = await axios.get(
-        `https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=ic&freq=annual&token=${FINNHUB_API_KEY}`
-      );
-      const response_financials_cf = await axios.get(
-        `https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=cf&freq=annual&token=${FINNHUB_API_KEY}`
-      );
+      const [
+        response_profile,
+        price_metrics,
+        response_basic_financials,
+        response_financials_bs,
+        response_financials_ic,
+        response_financials_cf,
+      ] = await Promise.all([
+        axios.get(`https://finnhub.io/api/v1/stock/profile?symbol=${symbol}&token=${FINNHUB_API_KEY}`),
+        axios.get(`https://finnhub.io/api/v1/stock/price-metric?symbol=${symbol}&token=${FINNHUB_API_KEY}`),
+        axios.get(`https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${FINNHUB_API_KEY}`),
+        axios.get(`https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=bs&freq=annual&token=${FINNHUB_API_KEY}`),
+        axios.get(`https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=ic&freq=annual&token=${FINNHUB_API_KEY}`),
+        axios.get(`https://finnhub.io/api/v1/stock/financials?symbol=${symbol}&statement=cf&freq=annual&token=${FINNHUB_API_KEY}`),
+      ]);
 
       if (response_basic_financials.status === 200 && response_profile.status === 200 && price_metrics.status === 200) {
         // Extracting the relevant data from the response
-        const profile = response_profile.data;
-        const price_metric = price_metrics.data.data;
-        const financials_bs = response_financials_bs.data.financials[0];
-        const financials_ic = response_financials_ic.data.financials[0];
-        const financials_cf = response_financials_cf.data.financials[0];
-        const b_financials = response_basic_financials.data.metric;
+        const profile = response_profile.data; // company profile
+        const price_metric = price_metrics.data.data; // price metrics
+        const financials_bs = response_financials_bs.data.financials[0]; // balance sheet
+        const financials_ic = response_financials_ic.data.financials[0]; // income statement
+        const financials_cf = response_financials_cf.data.financials[0]; // cash flow statement
+        const b_financials = response_basic_financials.data.metric; // basic financials
 
         const selectedData = {
           company_profile: {
