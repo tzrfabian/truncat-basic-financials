@@ -5,7 +5,7 @@ const { FINNHUB_API_KEY } = process.env;
 
 class BasicFinancialsController {
   static async getBasicFinancials(req, res) {
-    const { symbol } = req.params;
+    const { symbol } = req.query;
 
     if (!symbol) {
       return res.status(400).json({ error: 'Symbol is required' });

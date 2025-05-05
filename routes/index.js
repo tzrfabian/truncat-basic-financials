@@ -8,6 +8,6 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/api/basic-financials/:symbol', BasicFinancialsController.getBasicFinancials);
+router.get('/api/company-fundamental', BasicFinancialsController.getBasicFinancials);
 
 module.exports = router;
