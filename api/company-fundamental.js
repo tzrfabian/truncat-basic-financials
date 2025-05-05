@@ -6,13 +6,13 @@ const { FINNHUB_API_KEY } = process.env;
 module.exports = async (req, res) => {
 
   if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return next({ error: 'Method Not Allowed' });
   }
 
   const { symbol } = req.query;
 
   if (!symbol) {
-    return res.status(400).json({ error: 'Symbol is required' });
+    return next({ error: 'Symbol is required' });
   }
 
   try {
@@ -100,6 +100,6 @@ module.exports = async (req, res) => {
     }
   } catch (error) {
     console.error('Error fetching basic financials:', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+    next(error)
   }
 };
